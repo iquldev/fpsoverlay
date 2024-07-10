@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "fpsoverlay",
+	"version": "${version}",
+	"name": "FPS Overlay",
+	"description": "Shows your FPS on the screen.",
+	"authors": [
+		"iquldev"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/project/fps-overlay",
+		"sources": "https://github.com/iquldev/fpsoverlay"
+	},
+	"license": "MIT",
+	"icon": "assets/fpsoverlay/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"iquldev.fpsoverlay.FPSOverlay"
+		],
+		"client": [
+			"iquldev.fpsoverlay.FPSOverlayClient"
+		]
+	},
+	"mixins": [
+		"fpsoverlay.mixins.json",
+		{
+			"config": "fpsoverlay.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
