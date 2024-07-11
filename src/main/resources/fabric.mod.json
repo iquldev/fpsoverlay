@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "fpsoverlay",
-	"version": "1.0",
+	"version": "1.1",
 	"name": "FPS Overlay",
 	"description": "Shows your FPS on the screen.",
 	"authors": [
@@ -20,7 +20,10 @@
 		],
 		"client": [
 			"iquldev.fpsoverlay.FPSOverlayClient"
-		]
+		],
+		"modmenu": [
+            "iquldev.fpsoverlay.FPSOverlayModMenu"
+        ]
 	},
 	"mixins": [
 		"fpsoverlay.mixins.json",
