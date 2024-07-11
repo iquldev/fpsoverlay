@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "fpsoverlay",
-	"version": "${version}",
+	"version": "1.0",
 	"name": "FPS Overlay",
 	"description": "Shows your FPS on the screen.",
 	"authors": [
