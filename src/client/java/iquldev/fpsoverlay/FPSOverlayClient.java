@@ -57,7 +57,6 @@ public class FPSOverlayClient implements ClientModInitializer {
 
                     int advancedX = x + textWidthFps + 15;
                     int textWidthMinMax = client.textRenderer.getWidth(minMaxText);
-                    int textHeightMinMax = client.textRenderer.fontHeight;
 
                     context.fill(advancedX - padding, y - padding, advancedX + textWidthMinMax + padding, y + textHeightFps + padding, backgroundColor);
                     context.drawText(client.textRenderer, minMaxText, advancedX, y, 0xFFFFFFFF, false);
@@ -81,7 +80,6 @@ public class FPSOverlayClient implements ClientModInitializer {
                 String minMaxText = minFps + " ▼ " + maxFps + " ▲";
 
                 int textWidthMinMax = client.textRenderer.getWidth(minMaxText);
-                int textHeightMinMax = client.textRenderer.fontHeight;
 
                 context.fill(x - padding, y - padding, x + textWidthMinMax + padding, y + textHeightFps + padding, backgroundColor);
                 context.drawText(client.textRenderer, minMaxText, x, y, 0xFFFFFFFF, false);
