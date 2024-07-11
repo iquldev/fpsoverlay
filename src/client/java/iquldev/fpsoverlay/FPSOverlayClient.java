@@ -3,22 +3,22 @@ package iquldev.fpsoverlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
-import net.fabricmc.fabric.api.client.command.v2.*;
-import net.minecraft.text.Text;
-import com.mojang.brigadier.arguments.BoolArgumentType;
+import eu.midnightdust.lib.config.MidnightConfig;
 
 public class FPSOverlayClient implements ClientModInitializer {
 	private int minFps = Integer.MAX_VALUE;
 	private int maxFps = Integer.MIN_VALUE;
 	private int fps = 0;
-	private boolean isShowed = true;
-	private boolean isAdvancedShowed = false;
 	private long lastUpdateTime = System.currentTimeMillis();
     private static final int UPDATE_INTERVAL = 30000;
 	@Override
 	public void onInitializeClient() {
+		MidnightConfig.init("fpsoverlay", FPSOverlayConfig.class);
 		HudRenderCallback.EVENT.register((context, tickDeltaManager) -> {
 			MinecraftClient client = MinecraftClient.getInstance();
+
+			boolean isShowed = FPSOverlayConfig.isShowed;
+            boolean isAdvancedShowed = FPSOverlayConfig.isAdvancedShowed;
 
 			int x = 10;
 			int y = 10;
@@ -86,29 +86,6 @@ public class FPSOverlayClient implements ClientModInitializer {
                 context.fill(x - padding, y - padding, x + textWidthMinMax + padding, y + textHeightFps + padding, backgroundColor);
                 context.drawText(client.textRenderer, minMaxText, x, y, 0xFFFFFFFF, false);
             }
-		});
-
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-			dispatcher.register(ClientCommandManager.literal("fpsoverlay")
-				.then(ClientCommandManager.literal("showFPS")
-					.then(ClientCommandManager.argument("value", BoolArgumentType.bool())
-						.executes(context -> {
-							isShowed = BoolArgumentType.getBool(context, "value");
-							return 1;
-						})))
-				.then(ClientCommandManager.literal("showAdvanced")
-					.then(ClientCommandManager.argument("value", BoolArgumentType.bool())
-						.executes(context -> {
-							isAdvancedShowed = BoolArgumentType.getBool(context, "value");
-							return 1;
-						})))
-				.executes(context -> {
-					context.getSource().sendFeedback(Text.literal("Mod commands\n" +
-						"\n" +
-						"/fpsoverlay showFPS [true/false] - Show FPS Overlay\n" +
-						"/fpsoverlay showAdvanced [true/false] - Show Advanced FPS Overlay"));
-					return 1;
-				}));
 		});
 	}
 }
