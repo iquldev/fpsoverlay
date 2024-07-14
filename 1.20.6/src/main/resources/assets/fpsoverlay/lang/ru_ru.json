@@ -1,0 +1,8 @@
+{
+    "fpsoverlay.midnightconfig.title": "FPS Overlay",
+    "fpsoverlay.midnightconfig.display": "Отображение",
+    "fpsoverlay.midnightconfig.isShowed": "Показывать FPS на экране",
+    "fpsoverlay.midnightconfig.isAdvancedShowed": "Показывать расширенный счетчик FPS",
+    "fpsoverlay.keys.show": "Показать/скрыть FPS",
+    "fpsoverlay.category.keys": "FPS Overlay"
+}
