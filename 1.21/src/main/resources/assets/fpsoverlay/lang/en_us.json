@@ -1,0 +1,8 @@
+{
+    "fpsoverlay.midnightconfig.title": "FPS Overlay",
+    "fpsoverlay.midnightconfig.display": "Display",
+    "fpsoverlay.midnightconfig.isShowed": "Show FPS on the screen",
+    "fpsoverlay.midnightconfig.isAdvancedShowed": "Show extended FPS counter",
+    "fpsoverlay.keys.show": "Show/Hide FPS",
+    "fpsoverlay.category.keys": "FPS Overlay"
+}
