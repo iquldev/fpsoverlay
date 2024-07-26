@@ -4,5 +4,11 @@
     "fpsoverlay.midnightconfig.isShowed": "Show FPS on the screen",
     "fpsoverlay.midnightconfig.isAdvancedShowed": "Show extended FPS counter",
     "fpsoverlay.keys.show": "Show/Hide FPS",
-    "fpsoverlay.category.keys": "FPS Overlay"
+    "fpsoverlay.category.keys": "FPS Overlay",
+    "fpsoverlay.midnightconfig.position": "Position",
+    "fpsoverlay.midnightconfig.overlayPosition": "Display position",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.TOP_LEFT": "Top Left",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.TOP_RIGHT": "Top Right",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.BOTTOM_LEFT": "Bottom Left",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.BOTTOM_RIGHT": "Bottom Right"
 }

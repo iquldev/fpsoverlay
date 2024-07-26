@@ -4,5 +4,11 @@
     "fpsoverlay.midnightconfig.isShowed": "Показывать FPS на экране",
     "fpsoverlay.midnightconfig.isAdvancedShowed": "Показывать расширенный счетчик FPS",
     "fpsoverlay.keys.show": "Показать/скрыть FPS",
-    "fpsoverlay.category.keys": "FPS Overlay"
+    "fpsoverlay.category.keys": "FPS Overlay",
+    "fpsoverlay.midnightconfig.position": "Позиция",
+    "fpsoverlay.midnightconfig.overlayPosition": "Позиция на экране",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.TOP_LEFT": "Верхний левый угол",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.TOP_RIGHT": "Верхний правый угол",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.BOTTOM_LEFT": "Нижний левый угол",
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.BOTTOM_RIGHT": "Нижний правый угол"
 }
