@@ -27,6 +27,8 @@ public class FPSOverlayClient implements ClientModInitializer {
             boolean isShowed = FPSOverlayConfig.isShowed;
             boolean isAdvancedShowed = FPSOverlayConfig.isAdvancedShowed;
             FPSOverlayConfig.OverlayPosition overlayPosition = FPSOverlayConfig.overlayPosition;
+            int overlayBackgroundColor = parseColor(FPSOverlayConfig.overlayBackgroundColor, FPSOverlayConfig.overlayTransparency);
+            int advancedBackgroundColor = parseColor(FPSOverlayConfig.advancedBackgroundColor, FPSOverlayConfig.advancedTransparency);
 
             MinecraftClient client = MinecraftClient.getInstance();
 
@@ -69,7 +71,7 @@ public class FPSOverlayClient implements ClientModInitializer {
             int advancedY = y;
 
             if (isShowed && !isF1Pressed) {
-                context.fill(x - padding, y - padding, x + textWidthFps + padding, y + textHeightFps + padding, 0x80000000);
+                context.fill(x - padding, y - padding, x + textWidthFps + padding, y + textHeightFps + padding, overlayBackgroundColor);
                 context.drawText(client.textRenderer, text, x, y, 0xFFFFFFFF, false);
 
                 switch (overlayPosition) {
@@ -123,7 +125,7 @@ public class FPSOverlayClient implements ClientModInitializer {
                     }
                 }
 
-                context.fill(advancedX - padding, advancedY - padding, advancedX + textWidthMinMax + padding, advancedY + textHeightFps + padding, 0x80000000);
+                context.fill(advancedX - padding, advancedY - padding, advancedX + textWidthMinMax + padding, advancedY + textHeightFps + padding, advancedBackgroundColor);
                 context.drawText(client.textRenderer, minMaxText, advancedX, advancedY, 0xFFFFFFFF, false);
             }
         });
@@ -140,5 +142,18 @@ public class FPSOverlayClient implements ClientModInitializer {
                 isF1Pressed = !isF1Pressed;
             }
         });
+    }
+
+    private int parseColor(String colorStr, int transparency) {
+        try {
+            if (colorStr.startsWith("#")) {
+                colorStr = colorStr.substring(1);
+            }
+            int color = Integer.parseInt(colorStr, 16);
+            int alpha = (int) ((transparency / 100.0) * 255);
+            return (alpha << 24) | color;
+        } catch (NumberFormatException e) {
+            return 0x80000000;
+        }
     }
 }

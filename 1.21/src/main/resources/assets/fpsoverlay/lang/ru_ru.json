@@ -10,5 +10,14 @@
     "fpsoverlay.midnightconfig.enum.OverlayPosition.TOP_LEFT": "Верхний левый угол",
     "fpsoverlay.midnightconfig.enum.OverlayPosition.TOP_RIGHT": "Верхний правый угол",
     "fpsoverlay.midnightconfig.enum.OverlayPosition.BOTTOM_LEFT": "Нижний левый угол",
-    "fpsoverlay.midnightconfig.enum.OverlayPosition.BOTTOM_RIGHT": "Нижний правый угол"
+    "fpsoverlay.midnightconfig.enum.OverlayPosition.BOTTOM_RIGHT": "Нижний правый угол",
+    "fpsoverlay.midnightconfig.category.a": "Основные",
+    "fpsoverlay.midnightconfig.category.b": "Гланый виджет",
+    "fpsoverlay.midnightconfig.category.c": "Расширенный виджет",
+    "fpsoverlay.midnightconfig.overlayColor": "Цвет",
+    "fpsoverlay.midnightconfig.advancedColor": "Цвет",
+    "fpsoverlay.midnightconfig.overlayBackgroundColor": "Фоновый цвет",
+    "fpsoverlay.midnightconfig.overlayTransparency": "Прозрачность фона",
+    "fpsoverlay.midnightconfig.advancedBackgroundColor": "Фоновый цвет",
+    "fpsoverlay.midnightconfig.advancedTransparency": "Прозрачность фона"
 }
