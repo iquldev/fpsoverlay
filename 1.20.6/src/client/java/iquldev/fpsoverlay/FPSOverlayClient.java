@@ -33,39 +33,40 @@ public class FPSOverlayClient implements ClientModInitializer {
             MinecraftClient client = MinecraftClient.getInstance();
 
             int padding = 5;
-            int x = 10;
-            int y = 10;
+            int x;
+            int y;
 
             int screenWidth = client.getWindow().getScaledWidth();
             int screenHeight = client.getWindow().getScaledHeight();
 
             fps = client.getCurrentFps();
-            String text = fps + " FPS";
+
+            String text = formatText(FPSOverlayConfig.overlayText, client);
+            String minMaxText = formatText(FPSOverlayConfig.advancedText, client);
+
             int textWidthFps = client.textRenderer.getWidth(text);
             int textHeightFps = client.textRenderer.fontHeight;
 
-            String minMaxText = minFps + " ▼ " + maxFps + " ▲";
             int textWidthMinMax = client.textRenderer.getWidth(minMaxText);
 
-            switch (overlayPosition) {
-                case TOP_RIGHT:
+            y = switch (overlayPosition) {
+                case TOP_RIGHT -> {
                     x = screenWidth - 10 - textWidthFps - padding;
-                    y = 10;
-                    break;
-                case BOTTOM_LEFT:
+                    yield 10;
+                }
+                case BOTTOM_LEFT -> {
                     x = 10;
-                    y = screenHeight - 10 - textHeightFps - padding;
-                    break;
-                case BOTTOM_RIGHT:
+                    yield screenHeight - 10 - textHeightFps - padding;
+                }
+                case BOTTOM_RIGHT -> {
                     x = screenWidth - 10 - textWidthFps - padding;
-                    y = screenHeight - 10 - textHeightFps - padding;
-                    break;
-                case TOP_LEFT:
-                default:
+                    yield screenHeight - 10 - textHeightFps - padding;
+                }
+                default -> {
                     x = 10;
-                    y = 10;
-                    break;
-            }
+                    yield 10;
+                }
+            };
 
             int advancedX = x;
             int advancedY = y;
@@ -74,17 +75,10 @@ public class FPSOverlayClient implements ClientModInitializer {
                 context.fill(x - padding, y - padding, x + textWidthFps + padding, y + textHeightFps + padding, overlayBackgroundColor);
                 context.drawText(client.textRenderer, text, x, y, 0xFFFFFFFF, false);
 
-                switch (overlayPosition) {
-                    case TOP_RIGHT:
-                    case BOTTOM_RIGHT:
-                        advancedX = x - textWidthMinMax - padding * 3;
-                        break;
-                    case TOP_LEFT:
-                    case BOTTOM_LEFT:
-                    default:
-                        advancedX = x + textWidthFps + padding * 3;
-                        break;
-                }
+                advancedX = switch (overlayPosition) {
+                    case TOP_RIGHT, BOTTOM_RIGHT -> x - textWidthMinMax - padding * 3;
+                    default -> x + textWidthFps + padding * 3;
+                };
             }
 
             if (isAdvancedShowed && !isF1Pressed) {
@@ -104,25 +98,18 @@ public class FPSOverlayClient implements ClientModInitializer {
                 }
 
                 if (!isShowed) {
-                    switch (overlayPosition) {
-                        case TOP_RIGHT:
+                    advancedY = switch (overlayPosition) {
+                        case TOP_RIGHT -> {
                             advancedX = screenWidth - 10 - textWidthMinMax - padding * 2;
-                            advancedY = 10;
-                            break;
-                        case BOTTOM_RIGHT:
+                            yield 10;
+                        }
+                        case BOTTOM_RIGHT -> {
                             advancedX = screenWidth - 10 - textWidthMinMax - padding * 2;
-                            advancedY = screenHeight - 10 - textHeightFps - padding;
-                            break;
-                        case BOTTOM_LEFT:
-                            advancedX = 10;
-                            advancedY = screenHeight - 10 - textHeightFps - padding;
-                            break;
-                        case TOP_LEFT:
-                        default:
-                            advancedX = 10;
-                            advancedY = 10;
-                            break;
-                    }
+                            yield screenHeight - 10 - textHeightFps - padding;
+                        }
+                        case BOTTOM_LEFT -> screenHeight - 10 - textHeightFps - padding;
+                        default -> 10;
+                    };
                 }
 
                 context.fill(advancedX - padding, advancedY - padding, advancedX + textWidthMinMax + padding, advancedY + textHeightFps + padding, advancedBackgroundColor);
@@ -155,5 +142,27 @@ public class FPSOverlayClient implements ClientModInitializer {
         } catch (NumberFormatException e) {
             return 0x80000000;
         }
+    }
+
+    private String formatText(String text, MinecraftClient client) {
+        if (client.player == null) {
+            return text;
+        }
+
+        String systemTime = String.format("%tH:%tM", System.currentTimeMillis(), System.currentTimeMillis());
+
+        String x = String.format("%.1f", client.player.getX());
+        String y = String.format("%.1f", client.player.getY());
+        String z = String.format("%.1f", client.player.getZ());
+
+        text = text.replace("{fps}", String.valueOf(client.getCurrentFps()));
+        text = text.replace("{x}", x);
+        text = text.replace("{y}", y);
+        text = text.replace("{z}", z);
+        text = text.replace("{systemTime}", systemTime);
+        text = text.replace("{minFps}", String.valueOf(minFps));
+        text = text.replace("{maxFps}", String.valueOf(maxFps));
+
+        return text;
     }
 }

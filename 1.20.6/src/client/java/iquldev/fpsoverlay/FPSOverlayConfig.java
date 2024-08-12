@@ -14,9 +14,11 @@ public class FPSOverlayConfig extends MidnightConfig {
         BOTTOM_LEFT,
         BOTTOM_RIGHT
     }
+    @Entry(category = "b") public static String overlayText = "{fps} FPS";
     @Comment(category = "b", centered = true) public static Comment overlayColor;
     @Entry(category = "b", width = 7, min = 7, isColor = true) public static String overlayBackgroundColor = "#000000";
     @Entry(category = "b", isSlider = true, min = 0, max = 100, precision = 1) public static int overlayTransparency = 50;
+    @Entry(category = "c") public static String advancedText = "{minFps} ▼ {maxFps} ▲";
     @Comment(category = "c", centered = true) public static Comment advancedColor;
     @Entry(category = "c", width = 7, min = 7, isColor = true) public static String advancedBackgroundColor = "#000000";
     @Entry(category = "c", isSlider = true, min = 0, max = 100, precision = 1) public static int advancedTransparency = 50;
