@@ -19,6 +19,10 @@ public class FPSOverlayClient implements ClientModInitializer {
     private static KeyBinding keyBinding;
     private boolean isF1Pressed = false;
 
+    private long lastTpsCheckTime = 0;
+    private int lastTickCount = 0;
+    private double tps = 20.0;
+
     @Override
     public void onInitializeClient() {
         MidnightConfig.init("fpsoverlay", FPSOverlayConfig.class);
@@ -40,11 +44,13 @@ public class FPSOverlayClient implements ClientModInitializer {
             int screenHeight = client.getWindow().getScaledHeight();
 
             fps = client.getCurrentFps();
-            String text = fps + " FPS";
+
+            String text = formatText(FPSOverlayConfig.overlayText, fps, minFps, maxFps);
+            String minMaxText = formatText(FPSOverlayConfig.advancedText, fps, minFps, maxFps);
+
             int textWidthFps = client.textRenderer.getWidth(text);
             int textHeightFps = client.textRenderer.fontHeight;
-
-            String minMaxText = minFps + " ▼ " + maxFps + " ▲";
+            
             int textWidthMinMax = client.textRenderer.getWidth(minMaxText);
 
             switch (overlayPosition) {
@@ -155,5 +161,11 @@ public class FPSOverlayClient implements ClientModInitializer {
         } catch (NumberFormatException e) {
             return 0x80000000;
         }
+    }
+
+    private String formatText(String format, int fps, int minFps, int maxFps) {
+        return format.replace("{fps}", String.valueOf(fps))
+                     .replace("{minFps}", String.valueOf(minFps))
+                     .replace("{maxFps}", String.valueOf(maxFps));
     }
 }
