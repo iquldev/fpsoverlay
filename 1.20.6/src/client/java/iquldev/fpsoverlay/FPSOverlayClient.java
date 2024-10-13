@@ -4,7 +4,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
-import eu.midnightdust.lib.config.MidnightConfig;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
@@ -21,14 +20,16 @@ public class FPSOverlayClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        MidnightConfig.init("fpsoverlay", FPSOverlayConfig.class);
-
         HudRenderCallback.EVENT.register((context, tickDelta) -> {
             boolean isShowed = FPSOverlayConfig.isShowed;
             boolean isAdvancedShowed = FPSOverlayConfig.isAdvancedShowed;
             FPSOverlayConfig.OverlayPosition overlayPosition = FPSOverlayConfig.overlayPosition;
+
             int overlayBackgroundColor = parseColor(FPSOverlayConfig.overlayBackgroundColor, FPSOverlayConfig.overlayTransparency);
             int advancedBackgroundColor = parseColor(FPSOverlayConfig.advancedBackgroundColor, FPSOverlayConfig.advancedTransparency);
+
+            int overlayTextColor = parseColor(FPSOverlayConfig.overlayTextColor, 100);
+            int advancedTextColor = parseColor(FPSOverlayConfig.advancedTextColor, 100);
 
             MinecraftClient client = MinecraftClient.getInstance();
 
@@ -73,7 +74,7 @@ public class FPSOverlayClient implements ClientModInitializer {
 
             if (isShowed && !isF1Pressed) {
                 context.fill(x - padding, y - padding, x + textWidthFps + padding, y + textHeightFps + padding, overlayBackgroundColor);
-                context.drawText(client.textRenderer, text, x, y, 0xFFFFFFFF, false);
+                context.drawText(client.textRenderer, text, x, y, overlayTextColor, false);
 
                 advancedX = switch (overlayPosition) {
                     case TOP_RIGHT, BOTTOM_RIGHT -> x - textWidthMinMax - padding * 3;
@@ -113,7 +114,7 @@ public class FPSOverlayClient implements ClientModInitializer {
                 }
 
                 context.fill(advancedX - padding, advancedY - padding, advancedX + textWidthMinMax + padding, advancedY + textHeightFps + padding, advancedBackgroundColor);
-                context.drawText(client.textRenderer, minMaxText, advancedX, advancedY, 0xFFFFFFFF, false);
+                context.drawText(client.textRenderer, minMaxText, advancedX, advancedY, advancedTextColor, false);
             }
         });
 
@@ -133,16 +134,24 @@ public class FPSOverlayClient implements ClientModInitializer {
 
     private int parseColor(String colorStr, int transparency) {
         try {
-            if (colorStr.startsWith("#")) {
+            if (colorStr == null || colorStr.isEmpty()) {
+                return 0x80000000;
+            }
+
+            if (colorStr.charAt(0) == '#') {
                 colorStr = colorStr.substring(1);
             }
+
             int color = Integer.parseInt(colorStr, 16);
-            int alpha = (int) ((transparency / 100.0) * 255);
+
+            int alpha = (int) (transparency * 2.55);
+
             return (alpha << 24) | color;
         } catch (NumberFormatException e) {
             return 0x80000000;
-        }
     }
+}
+
 
     private String formatText(String text, MinecraftClient client) {
         if (client.player == null) {
