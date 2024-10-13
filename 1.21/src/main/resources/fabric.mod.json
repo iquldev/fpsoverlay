@@ -1,14 +1,14 @@
 {
 	"schemaVersion": 1,
 	"id": "fpsoverlay",
-	"version": "1.5-beta",
+	"version": "1.5",
 	"name": "FPS Overlay",
 	"description": "Shows your FPS on the screen.",
 	"authors": [
 		"iquldev"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/project/fps-overlay",
+		"homepage": "https://modrinth.com/mod/fpsoverlay",
 		"sources": "https://github.com/iquldev/fpsoverlay"
 	},
 	"license": "MIT",
@@ -33,5 +33,8 @@
 	},
 	"suggests": {
 		"another-mod": "*"
-	}
+	},
+	"mixins": [
+		"fpsoverlay.mixins.json"
+	]
 }
