@@ -21,5 +21,7 @@
     "fpsoverlay.midnightconfig.advancedBackgroundColor": "Фоновый цвет",
     "fpsoverlay.midnightconfig.advancedTransparency": "Прозрачность фона",
     "fpsoverlay.midnightconfig.overlayText": "Кастомный текст ({fps}, {minFps}, {maxFps}, {systemTime}, {x}, {y}, {z} поддерживается)",
-    "fpsoverlay.midnightconfig.advancedText": "Кастомный текст ({fps}, {minFps}, {maxFps}, {systemTime}, {x}, {y}, {z} поддерживается)"
+    "fpsoverlay.midnightconfig.advancedText": "Кастомный текст ({fps}, {minFps}, {maxFps}, {systemTime}, {x}, {y}, {z} поддерживается)",
+    "fpsoverlay.midnightconfig.overlayTextColor": "Цвет текста",
+    "fpsoverlay.midnightconfig.advancedTextColor": "Цвет текста"
 }

@@ -21,5 +21,7 @@
     "fpsoverlay.midnightconfig.advancedBackgroundColor": "Background Color",
     "fpsoverlay.midnightconfig.advancedTransparency": "Background Transparency",
     "fpsoverlay.midnightconfig.overlayText": "Custom text ({fps}, {minFps}, {maxFps}, {systemTime}, {x}, {y}, {z} support)",
-    "fpsoverlay.midnightconfig.advancedText": "Custom text ({fps}, {minFps}, {maxFps}, {systemTime}, {x}, {y}, {z} support)"
+    "fpsoverlay.midnightconfig.advancedText": "Custom text ({fps}, {minFps}, {maxFps}, {systemTime}, {x}, {y}, {z} support)",
+    "fpsoverlay.midnightconfig.overlayTextColor": "Text Color",
+    "fpsoverlay.midnightconfig.advancedTextColor": "Text Color"
 }

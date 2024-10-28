@@ -27,7 +27,7 @@ public class FPSOverlayClient implements ClientModInitializer {
 
             int overlayBackgroundColor = parseColor(FPSOverlayConfig.overlayBackgroundColor, FPSOverlayConfig.overlayTransparency);
             int advancedBackgroundColor = parseColor(FPSOverlayConfig.advancedBackgroundColor, FPSOverlayConfig.advancedTransparency);
-
+            .
             int overlayTextColor = parseColor(FPSOverlayConfig.overlayTextColor, 100);
             int advancedTextColor = parseColor(FPSOverlayConfig.advancedTextColor, 100);
 
