@@ -4,6 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
@@ -52,19 +53,19 @@ public class FPSOverlayClient implements ClientModInitializer {
 
             y = switch (overlayPosition) {
                 case TOP_RIGHT -> {
-                    x = screenWidth - 10 - textWidthFps - padding;
+                    x = screenWidth - 15 - textWidthFps - padding;
                     yield 10;
                 }
                 case BOTTOM_LEFT -> {
-                    x = 10;
+                    x = 15;
                     yield screenHeight - 10 - textHeightFps - padding;
                 }
                 case BOTTOM_RIGHT -> {
-                    x = screenWidth - 10 - textWidthFps - padding;
+                    x = screenWidth - 15 - textWidthFps - padding;
                     yield screenHeight - 10 - textHeightFps - padding;
                 }
                 default -> {
-                    x = 10;
+                    x = 15;
                     yield 10;
                 }
             };
@@ -73,12 +74,12 @@ public class FPSOverlayClient implements ClientModInitializer {
             int advancedY = y;
 
             if (isShowed && !isF1Pressed) {
-                context.fill(x - padding, y - padding, x + textWidthFps + padding, y + textHeightFps + padding, overlayBackgroundColor);
+                drawRoundedRect(context, x - padding, y - padding, x + textWidthFps + padding, y + textHeightFps + padding, overlayBackgroundColor);
                 context.drawText(client.textRenderer, text, x, y, overlayTextColor, false);
 
                 advancedX = switch (overlayPosition) {
-                    case TOP_RIGHT, BOTTOM_RIGHT -> x - textWidthMinMax - padding * 3;
-                    default -> x + textWidthFps + padding * 3;
+                    case TOP_RIGHT, BOTTOM_RIGHT -> x - textWidthMinMax - padding * 4;
+                    default -> x + textWidthFps + padding * 4;
                 };
             }
 
@@ -113,7 +114,7 @@ public class FPSOverlayClient implements ClientModInitializer {
                     };
                 }
 
-                context.fill(advancedX - padding, advancedY - padding, advancedX + textWidthMinMax + padding, advancedY + textHeightFps + padding, advancedBackgroundColor);
+                drawRoundedRect(context, advancedX - padding, advancedY - padding, advancedX + textWidthMinMax + padding, advancedY + textHeightFps + padding, advancedBackgroundColor);
                 context.drawText(client.textRenderer, minMaxText, advancedX, advancedY, advancedTextColor, false);
             }
         });
@@ -173,5 +174,16 @@ public class FPSOverlayClient implements ClientModInitializer {
         text = text.replace("{maxFps}", String.valueOf(maxFps));
 
         return text;
+    }
+
+    private void drawRoundedRect(DrawContext context, int x1, int y1, int x2, int y2, int color) {
+        int paddingWidth = 3; // Ширина боковых выступов
+        int paddingHeight = 3; // Высота выступов
+
+        context.fill(x1, y1, x2, y2, color);
+
+        context.fill(x1 - paddingWidth, y1 + paddingHeight, x1, y2 - paddingHeight, color);
+
+        context.fill(x2, y1 + paddingHeight, x2 + paddingWidth, y2 - paddingHeight, color);
     }
 }

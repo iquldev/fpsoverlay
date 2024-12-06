@@ -48,9 +48,9 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation("com.terraformersmc:modmenu:12.0.0-beta.1")
+	modImplementation("com.terraformersmc:modmenu:13.0.0-beta.1")
 
-	modImplementation("maven.modrinth:midnightlib:1.6.4-fabric")
+	modImplementation("maven.modrinth:midnightlib:1.6.6-fabric")
 }
 
 processResources {
