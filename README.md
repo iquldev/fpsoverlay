@@ -1,7 +1,7 @@
-![FPS Overlay](https://cdn.modrinth.com/data/cached_images/6d0a13a14febf1fd71bce51c5ddb2a6c1f331905.png)
+![Info Overlay](https://cdn.modrinth.com/data/cached_images/6d0a13a14febf1fd71bce51c5ddb2a6c1f331905.png)
 # ℹ️ Information
 ## 📃 Description
-**Mod shows your FPS on the screen. Mod can also show minimum and maximum FPS. You can customize the position of the overlay on the screen.**
+**The mod allows you to display your FPS, as well as other information such as system time, coordinates, etc. You can freely edit the text using placeholders. You can also change the color, position, transparency of the overlay.**
 ## ✨ Features
 - Beautiful and minimalistic
 - Huge customization
@@ -14,6 +14,7 @@
 - English (en_us)
 - Russian (ru_ru)
 - Ukrainian (uk_ua)
-- Belarusian (be_by)<br>
+- Belarusian (be_by)
+- Simplified Chinese (zh_tw)<br>
 
 **Help with the translation on** [Crowdin](https://crowdin.com/project/fpsoverlay)!
