@@ -1,19 +1,20 @@
 {
 	"schemaVersion": 1,
 	"id": "fpsoverlay",
-	"version": "1.6",
-	"name": "FPS Overlay",
-	"description": "Shows your FPS on the screen.",
+	"version": "1.8",
+	"name": "Info Overlay (aka FPS Overlay)",
+	"description": "\uD83D\uDDA5\uFE0F Shows your FPS (and not only) on the screen",
 	"authors": [
 		"iquldev"
 	],
 	"contact": {
 		"homepage": "https://modrinth.com/mod/fps-overlay",
-		"sources": "https://github.com/iquldev/fpsoverlay"
+		"sources": "https://github.com/iquldev/fpsoverlay",
+		"issues": "https://github.com/iquldev/fpsoverlay/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/fpsoverlay/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"iquldev.fpsoverlay.FPSOverlay"

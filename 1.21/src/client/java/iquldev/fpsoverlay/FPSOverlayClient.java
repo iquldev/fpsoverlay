@@ -18,6 +18,10 @@ public class FPSOverlayClient implements ClientModInitializer {
     private static final int UPDATE_INTERVAL = 30000;
     private static KeyBinding keyBinding;
     private boolean isF1Pressed = false;
+    private boolean useOverlayDynamicText = false;
+    private boolean useAdvancedDynamicText = false;
+    private long lastOverlaySwitchTime = System.currentTimeMillis();
+    private long lastAdvancedSwitchTime = System.currentTimeMillis();
 
     @Override
     public void onInitializeClient() {
@@ -43,8 +47,25 @@ public class FPSOverlayClient implements ClientModInitializer {
 
             fps = client.getCurrentFps();
 
-            String text = formatText(FPSOverlayConfig.overlayText, client);
-            String minMaxText = formatText(FPSOverlayConfig.advancedText, client);
+            long currentTime = System.currentTimeMillis();
+
+            if (FPSOverlayConfig.overlayDynamicInterval > 0 && !FPSOverlayConfig.overlayDynamicText.isEmpty() && currentTime - lastOverlaySwitchTime >= FPSOverlayConfig.overlayDynamicInterval * 1000L) {
+                useOverlayDynamicText = !useOverlayDynamicText;
+                lastOverlaySwitchTime = currentTime;
+            }
+
+            if (FPSOverlayConfig.advancedDynamicInterval > 0 && !FPSOverlayConfig.advancedDynamicText.isEmpty() &&  currentTime - lastAdvancedSwitchTime >= FPSOverlayConfig.advancedDynamicInterval * 1000L) {
+                useAdvancedDynamicText = !useAdvancedDynamicText;
+                lastAdvancedSwitchTime = currentTime;
+            }
+
+            String text = (FPSOverlayConfig.overlayDynamicInterval > 0 && useOverlayDynamicText) ?
+                          formatText(FPSOverlayConfig.overlayDynamicText, client) :
+                          formatText(FPSOverlayConfig.overlayText, client);
+
+            String minMaxText = (FPSOverlayConfig.advancedDynamicInterval > 0 && useAdvancedDynamicText) ?
+                                formatText(FPSOverlayConfig.advancedDynamicText, client) :
+                                formatText(FPSOverlayConfig.advancedText, client);
 
             int textWidthFps = client.textRenderer.getWidth(text);
             int textHeightFps = client.textRenderer.fontHeight;
@@ -84,8 +105,6 @@ public class FPSOverlayClient implements ClientModInitializer {
             }
 
             if (isAdvancedShowed && !isF1Pressed) {
-                long currentTime = System.currentTimeMillis();
-
                 if (fps < minFps) {
                     minFps = fps;
                 }
@@ -150,9 +169,8 @@ public class FPSOverlayClient implements ClientModInitializer {
             return (alpha << 24) | color;
         } catch (NumberFormatException e) {
             return 0x80000000;
+        }
     }
-}
-
 
     private String formatText(String text, MinecraftClient client) {
         if (client.player == null) {
@@ -160,25 +178,71 @@ public class FPSOverlayClient implements ClientModInitializer {
         }
 
         String systemTime = String.format("%tH:%tM", System.currentTimeMillis(), System.currentTimeMillis());
+        int hour = Integer.parseInt(String.format("%tH", System.currentTimeMillis()));
+
+        String clockSymbol;
+        if (hour >= 6 && hour < 12) {
+            clockSymbol = "🕖";
+        } else if (hour >= 12 && hour < 18) {
+            clockSymbol = "🕓";
+        } else if (hour >= 18 && hour < 22) {
+            clockSymbol = "🕒";
+        } else {
+            clockSymbol = "🕰️";
+        }
+
+        String timeWithClock = String.format("%s %s", systemTime, clockSymbol);
 
         String x = String.format("%.1f", client.player.getX());
         String y = String.format("%.1f", client.player.getY());
         String z = String.format("%.1f", client.player.getZ());
 
+        String facing = getFacingDirection(client);
+
+        double playerSpeed = Math.sqrt(Math.pow(client.player.getVelocity().x, 2) +
+                                       Math.pow(client.player.getVelocity().y, 2) +
+                                       Math.pow(client.player.getVelocity().z, 2));
+        String playerSpeedStr = String.format("%.2f ⚡", playerSpeed);
+
+        assert client.world != null;
+        String dayTime = (client.world.getTimeOfDay() % 24000L < 13000L) ? "Day \uD83C\uDF1E" : "Night \uD83C\uDF19";
+
         text = text.replace("{fps}", String.valueOf(client.getCurrentFps()));
         text = text.replace("{x}", x);
         text = text.replace("{y}", y);
         text = text.replace("{z}", z);
-        text = text.replace("{systemTime}", systemTime);
+        text = text.replace("{systemTime}", timeWithClock);
         text = text.replace("{minFps}", String.valueOf(minFps));
         text = text.replace("{maxFps}", String.valueOf(maxFps));
+        text = text.replace("{facing}", facing);
+        text = text.replace("{playerSpeed}", playerSpeedStr);
+        text = text.replace("{dayTime}", dayTime);
 
         return text;
     }
 
+    private String getFacingDirection(MinecraftClient client) {
+        assert client.player != null;
+        float yaw = client.player.getYaw();
+
+        if (yaw < 0) {
+            yaw += 360;
+        }
+        if (yaw >= 315 || yaw < 45) {
+            return "South \uD83E\uDDED";
+        } else if (yaw >= 45 && yaw < 135) {
+            return "West \uD83E\uDDED";
+        } else if (yaw >= 135 && yaw < 225) {
+            return "North \uD83E\uDDED";
+        } else if (yaw >= 225 && yaw < 315) {
+            return "East \uD83E\uDDED";
+        }
+        return "Unknown";
+    }
+
     private void drawRoundedRect(DrawContext context, int x1, int y1, int x2, int y2, int color) {
-        int paddingWidth = 3; // Ширина боковых выступов
-        int paddingHeight = 3; // Высота выступов
+        int paddingWidth = 3;
+        int paddingHeight = 3;
 
         context.fill(x1, y1, x2, y2, color);
 
