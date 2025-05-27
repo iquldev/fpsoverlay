@@ -87,30 +87,52 @@ jobs:
           path: 1.21/build/libs/*.jar
           
   release:
-    name: 🚀 Create GitHub Release with Changelog
-    needs:
-      - build-1-20
-      - build-1-21
+    name: 🚀 Create Release with Changelog
+    needs: [build-1-20, build-1-21]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
+      - name: 🔖 Fetch all tags
+        run: git fetch --prune --unshallow --tags
+
+      - name: 📝 Generate Changelog
+        id: gen_notes
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.RELEASE_TOKEN }}
+          script: |
+            const tag = context.ref.replace('refs/tags/','');
+            const { data } = await github.rest.repos.generateReleaseNotes({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag
+            });
+            return data.body;
+
       - name: 📦 Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/github-script@v6
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.RELEASE_TOKEN }}
+          script: |
+            const tag = context.ref.replace('refs/tags/','');
+            const notes = `# Changelog for ${tag}\n\n${`${{ steps.gen_notes.outputs.result }}`}`;
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `Release ${tag}`,
+              body: notes,
+              draft: false,
+              prerelease: false
+            });
+            return release.data.upload_url;
 
       - name: 📤 Upload 1.20.6 JAR
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.result }}
           asset_path: 1.20.6/build/libs/*.jar
           asset_name: fpsoverlay-${{ github.ref_name }}-1.20.6.jar
           asset_content_type: application/java-archive
@@ -118,7 +140,7 @@ jobs:
       - name: 📤 Upload 1.21 JAR
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.result }}
           asset_path: 1.21/build/libs/*.jar
           asset_name: fpsoverlay-${{ github.ref_name }}-1.21.jar
           asset_content_type: application/java-archive
