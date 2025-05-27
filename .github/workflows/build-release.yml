@@ -19,23 +19,18 @@ jobs:
         minecraft_version: ["1.20", "1.21"]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
+          distribution: temurin
           java-version: ${{ matrix.minecraft_version == '1.20' && '17' || '21' }}
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v2
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ${{ matrix.minecraft_version }}/gradlew
+      - run: chmod +x ${{ matrix.minecraft_version }}/gradlew
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -45,33 +40,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-${{ matrix.minecraft_version }}-
 
-      - name: Build mod for MC ${{ matrix.minecraft_version }}.x
+      - name: Build for MC ${{ matrix.minecraft_version }}
         working-directory: ${{ matrix.minecraft_version }}
         run: ./gradlew build
 
-      - name: Prepare artifacts
-        run: |
+      - run: |
           mkdir -p build-output
           cd ${{ matrix.minecraft_version }}/build/libs
-
           for jar in *.jar; do
             if [[ ! "$jar" =~ (sources|dev|javadoc) ]]; then
-              base_name="${jar%.*}"
-              new_name="fpsoverlay-${base_name##*-}-mc${{ matrix.minecraft_version }}.jar"
-              cp "$jar" "../../../build-output/$new_name"
+              bn=${jar%.*}
+              cp "$jar" "../../../build-output/fpsoverlay-${bn##*-}-mc${{ matrix.minecraft_version }}.jar"
             fi
           done
-
-          for jar in *-sources.jar; do
-            if [ -f "$jar" ]; then
-              base_name="${jar%-sources.jar}"
-              new_name="fpsoverlay-${base_name##*-}-mc${{ matrix.minecraft_version }}-sources.jar"
-              cp "$jar" "../../../build-output/$new_name"
-            fi
+          for s in *-sources.jar; do
+            [ -f "$s" ] && cp "$s" "../../../build-output/fpsoverlay-${s%-sources.jar##*-}-mc${{ matrix.minecraft_version }}-sources.jar"
           done
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: fpsoverlay-mc${{ matrix.minecraft_version }}
           path: build-output/*
@@ -83,32 +69,27 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Download all build artifacts
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v3
 
-      - name: Collect all JAR files
-        run: |
+      - run: |
           mkdir -p release-files
           find . -name "*.jar" -exec cp {} release-files/ \;
 
-      - name: Get version information
-        id: version
+      - id: version
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            VERSION="${{ github.event.inputs.version }}"
-            TAG_NAME="v$VERSION"
+            V="${{ github.event.inputs.version }}"
+            T="v$V"
           else
-            VERSION=${GITHUB_REF#refs/tags/v}
-            TAG_NAME=${GITHUB_REF#refs/tags/}
+            V=${GITHUB_REF#refs/tags/v}
+            T=${GITHUB_REF#refs/tags/}
           fi
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "VERSION=$V" >> $GITHUB_OUTPUT
+          echo "TAG_NAME=$T" >> $GITHUB_OUTPUT
 
-      - name: Generate release notes
-        run: |
+      - run: |
           cat > release-notes.md << 'EOF'
           # FPS Overlay v${{ steps.version.outputs.VERSION }}
 
@@ -116,9 +97,9 @@ jobs:
 
           EOF
           if [ $(git tag --list | wc -l) -gt 1 ]; then
-            PREVIOUS_TAG=$(git tag --sort=-version:refname | sed -n '2p')
-            echo "### Changes since $PREVIOUS_TAG:" >> release-notes.md
-            git log --pretty=format:"- %s" $PREVIOUS_TAG..HEAD >> release-notes.md
+            P=$(git tag --sort=-version:refname | sed -n '2p')
+            echo "### Changes since $P:" >> release-notes.md
+            git log --pretty=format:"- %s" $P..HEAD >> release-notes.md
           else
             echo "### Initial release features:" >> release-notes.md
             git log --pretty=format:"- %s" >> release-notes.md
@@ -126,8 +107,7 @@ jobs:
           echo "---" >> release-notes.md
           echo "*Built automatically with GitHub Actions*" >> release-notes.md
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         with:
           name: "FPS Overlay ${{ steps.version.outputs.TAG_NAME }}"
           tag_name: ${{ steps.version.outputs.TAG_NAME }}
@@ -138,9 +118,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload to Modrinth (if configured)
+      - uses: Kir-Antipov/mc-publish@v3.3
         if: ${{ secrets.MODRINTH_TOKEN != '' }}
-        uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -159,9 +138,8 @@ jobs:
             depends
             *
 
-      - name: Upload to CurseForge (if configured)
+      - uses: Kir-Antipov/mc-publish@v3.3
         if: ${{ secrets.CURSEFORGE_TOKEN != '' }}
-        uses: Kir-Antipov/mc-publish@v3.3
         with:
           curseforge-id: ${{ vars.CURSEFORGE_PROJECT_ID }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
