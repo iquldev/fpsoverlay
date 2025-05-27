@@ -3,7 +3,7 @@ name: Build and Release FPS Overlay
 on:
   push:
     tags:
-      - "v*.*.*" 
+      - "v*.*.*"
   workflow_dispatch:
     inputs:
       version:
@@ -54,24 +54,19 @@ jobs:
           mkdir -p build-output
           cd ${{ matrix.minecraft_version }}/build/libs
 
-          # Находим основной JAR (не sources, не dev)
           for jar in *.jar; do
             if [[ ! "$jar" =~ (sources|dev|javadoc) ]]; then
-              # Переименовываем с добавлением версии MC
               base_name="${jar%.*}"
               new_name="fpsoverlay-${base_name##*-}-mc${{ matrix.minecraft_version }}.jar"
               cp "$jar" "../../../build-output/$new_name"
-              echo "Created: $new_name"
             fi
           done
 
-          # Копируем sources JAR если есть
           for jar in *-sources.jar; do
             if [ -f "$jar" ]; then
               base_name="${jar%-sources.jar}"
               new_name="fpsoverlay-${base_name##*-}-mc${{ matrix.minecraft_version }}-sources.jar"
               cp "$jar" "../../../build-output/$new_name"
-              echo "Created sources: $new_name"
             fi
           done
 
@@ -98,7 +93,6 @@ jobs:
         run: |
           mkdir -p release-files
           find . -name "*.jar" -exec cp {} release-files/ \;
-          ls -la release-files/
 
       - name: Get version information
         id: version
@@ -110,7 +104,6 @@ jobs:
             VERSION=${GITHUB_REF#refs/tags/v}
             TAG_NAME=${GITHUB_REF#refs/tags/}
           fi
-
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
 
@@ -122,8 +115,6 @@ jobs:
           ## 📝 Changelog
 
           EOF
-
-          # Добавляем changelog из коммитов
           if [ $(git tag --list | wc -l) -gt 1 ]; then
             PREVIOUS_TAG=$(git tag --sort=-version:refname | sed -n '2p')
             echo "### Changes since $PREVIOUS_TAG:" >> release-notes.md
@@ -132,9 +123,6 @@ jobs:
             echo "### Initial release features:" >> release-notes.md
             git log --pretty=format:"- %s" >> release-notes.md
           fi
-
-          echo "" >> release-notes.md
-          echo "" >> release-notes.md
           echo "---" >> release-notes.md
           echo "*Built automatically with GitHub Actions*" >> release-notes.md
 
@@ -151,67 +139,42 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload to Modrinth (if configured)
-        if: secrets.MODRINTH_TOKEN != ''
+        if: ${{ secrets.MODRINTH_TOKEN != '' }}
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
           files: |
             release-files/fpsoverlay-*-mc1.20.jar
             release-files/fpsoverlay-*-mc1.21.jar
-
           name: "FPS Overlay ${{ steps.version.outputs.VERSION }}"
           version: ${{ steps.version.outputs.VERSION }}
           changelog-file: release-notes.md
-
           loaders: fabric
           game-versions: |
             1.20
             1.20.1
-            1.20.2
-            1.20.3
-            1.20.4
-            1.20.5
-            1.20.6
-            1.21
-            1.21.1
-            1.21.2
-            1.21.3
-            1.21.4
-            1.21.5
           dependencies: |
-            fabric-api | depends | *
+            fabric-api
+            depends
+            *
 
       - name: Upload to CurseForge (if configured)
-        if: secrets.CURSEFORGE_TOKEN != ''
+        if: ${{ secrets.CURSEFORGE_TOKEN != '' }}
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           curseforge-id: ${{ vars.CURSEFORGE_PROJECT_ID }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
           files: |
             release-files/fpsoverlay-*-mc1.20.jar
             release-files/fpsoverlay-*-mc1.21.jar
-
           name: "FPS Overlay ${{ steps.version.outputs.VERSION }}"
           version: ${{ steps.version.outputs.VERSION }}
           changelog-file: release-notes.md
-
           loaders: fabric
           game-versions: |
             1.20
             1.20.1
-            1.20.2
-            1.20.3
-            1.20.4
-            1.20.5
-            1.20.6
-            1.21
-            1.21.1
-            1.21.2
-            1.21.3
-            1.21.4
-            1.21.5
           dependencies: |
-            fabric-api | required
+            fabric-api
+            required
