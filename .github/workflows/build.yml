@@ -94,17 +94,17 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
         
-      - name: 🔖 Fetch
+      - name: 🔖 Fetch tags and history
         run: |
           git fetch --prune --unshallow || true
           git fetch --tags
-
-      - name: 🔍 Previous tag
+  
+      - name: 🔍 Get previous tag
         id: prev_tag
         run: |
           PREV_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --skip=1 --max-count=1) || echo "")
           echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
-
+  
       - name: 📝 Generate changelog from commits
         id: changelog
         run: |
@@ -115,16 +115,28 @@ jobs:
             git log ${{ steps.prev_tag.outputs.prev_tag }}..HEAD --pretty=format:"* %s (%an)" >> $GITHUB_OUTPUT
           fi
           echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: 🚀 Create GitHub Release
+  
+      - name: 📥 Download build artifacts 1.20.6
+        uses: actions/download-artifact@v3
+        with:
+          name: mod-1.20.6
+          path: ./1.20.6/build/libs
+  
+      - name: 📥 Download build artifacts 1.21
+        uses: actions/download-artifact@v3
+        with:
+          name: mod-1.21
+          path: ./1.21/build/libs
+  
+      - name: 🚀 Create GitHub Release with JAR files
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
+          name: "Release ${{ github.ref_name }} 🎉"
           body: ${{ steps.changelog.outputs.changelog }}
           files: |
-            1.20.6/build/libs/*.jar
-            1.21/build/libs/*.jar
+            1.20.6/build/libs/mod-1.20.6.jar
+            1.21/build/libs/mod-1.21.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
