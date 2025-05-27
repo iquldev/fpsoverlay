@@ -7,11 +7,11 @@ on:
 
 jobs:
   build-1-20:
-    name: 🧱 Build 1.20
+    name: 🧱 Build 1.20.6
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: '1.20'
+        working-directory: '1.20.6'
 
     steps:
     - name: 📥 Checkout
@@ -29,9 +29,9 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-1.20-${{ hashFiles('1.20/**/*.gradle*', '1.20/**/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-1.20.6-${{ hashFiles('1.20.6/**/*.gradle*', '1.20.6/**/gradle-wrapper.properties') }}
         restore-keys: |
-          ${{ runner.os }}-gradle-1.20
+          ${{ runner.os }}-gradle-1.20.6
           
     - name: 🛠️ Build
       run: ./gradlew build
@@ -39,8 +39,8 @@ jobs:
     - name: 📤 JAR 1.20
       uses: actions/upload-artifact@v4
       with:
-        name: mod-1.20
-        path: 1.20/build/libs/*.jar
+        name: mod-1.20.6
+        path: 1.20.6/build/libs/*.jar
 
   build-1-21:
     name: 🧱 Build 1.21 Mod
