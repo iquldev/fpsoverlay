@@ -3,8 +3,8 @@ name: Build and Release FPS Overlay
 on:
   push:
     tags:
-      - "v*.*.*" # Триггер на теги версий (например, v1.0.0)
-  workflow_dispatch: # Возможность запустить вручную
+      - "v*.*.*" 
+  workflow_dispatch:
     inputs:
       version:
         description: "Release version (e.g., 1.0.0)"
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        minecraft_version: ["1.20.1", "1.21.1"]
+        minecraft_version: ["1.20", "1.21"]
 
     steps:
       - name: Checkout repository
@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: ${{ matrix.minecraft_version == '1.20.1' && '17' || '21' }}
+          java-version: ${{ matrix.minecraft_version == '1.20' && '17' || '21' }}
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-${{ matrix.minecraft_version }}-
 
-      - name: Build mod for MC ${{ matrix.minecraft_version }}
+      - name: Build mod for MC ${{ matrix.minecraft_version }}.x
         working-directory: ${{ matrix.minecraft_version }}
         run: ./gradlew build
 
@@ -158,8 +158,8 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           files: |
-            release-files/fpsoverlay-*-mc1.20.1.jar
-            release-files/fpsoverlay-*-mc1.21.1.jar
+            release-files/fpsoverlay-*-mc1.20.jar
+            release-files/fpsoverlay-*-mc1.21.jar
 
           name: "FPS Overlay ${{ steps.version.outputs.VERSION }}"
           version: ${{ steps.version.outputs.VERSION }}
@@ -167,8 +167,19 @@ jobs:
 
           loaders: fabric
           game-versions: |
+            1.20
             1.20.1
+            1.20.2
+            1.20.3
+            1.20.4
+            1.20.5
+            1.20.6
+            1.21
             1.21.1
+            1.21.2
+            1.21.3
+            1.21.4
+            1.21.5
           dependencies: |
             fabric-api | depends | *
 
@@ -180,8 +191,8 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           files: |
-            release-files/fpsoverlay-*-mc1.20.1.jar
-            release-files/fpsoverlay-*-mc1.21.1.jar
+            release-files/fpsoverlay-*-mc1.20.jar
+            release-files/fpsoverlay-*-mc1.21.jar
 
           name: "FPS Overlay ${{ steps.version.outputs.VERSION }}"
           version: ${{ steps.version.outputs.VERSION }}
@@ -189,7 +200,18 @@ jobs:
 
           loaders: fabric
           game-versions: |
+            1.20
             1.20.1
+            1.20.2
+            1.20.3
+            1.20.4
+            1.20.5
+            1.20.6
+            1.21
             1.21.1
+            1.21.2
+            1.21.3
+            1.21.4
+            1.21.5
           dependencies: |
             fabric-api | required
