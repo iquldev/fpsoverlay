@@ -4,14 +4,14 @@ on:
   push:
     branches: [main, master]
     paths:
-      - "1.20.1/**"
-      - "1.21.1/**"
+      - "1.20/**"
+      - "1.21/**"
       - ".github/workflows/**"
   pull_request:
     branches: [main, master]
     paths:
-      - "1.20.1/**"
-      - "1.21.1/**"
+      - "1.20/**"
+      - "1.21/**"
       - ".github/workflows/**"
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        minecraft_version: ["1.20.1", "1.21.1"]
+        minecraft_version: ["1.20", "1.21"]
 
     steps:
       - name: Checkout repository
@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: ${{ matrix.minecraft_version == '1.20.1' && '17' || '21' }}
+          java-version: ${{ matrix.minecraft_version == '1.20' && '17' || '21' }}
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -48,7 +48,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-${{ matrix.minecraft_version }}-
 
-      - name: Build mod for MC ${{ matrix.minecraft_version }}
+      - name: Build mod for MC ${{ matrix.minecraft_version }}.x
         working-directory: ${{ matrix.minecraft_version }}
         run: ./gradlew build
 
