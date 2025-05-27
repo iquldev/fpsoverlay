@@ -32,6 +32,9 @@ jobs:
         key: ${{ runner.os }}-gradle-1.20.6-${{ hashFiles('1.20.6/**/*.gradle*', '1.20.6/**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-1.20.6
+
+    - name: 🔓 Allow gradlew
+      run: chmod +x gradlew
           
     - name: 🛠️ Build
       run: ./gradlew build
@@ -68,6 +71,9 @@ jobs:
           key: ${{ runner.os }}-gradle-1.21-${{ hashFiles('1.21/**/*.gradle*', '1.21/**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-1.21
+
+      - name: 🔓 Allow gradlew
+        run: chmod +x gradlew
 
       - name: 🛠️ Build
         run: ./gradlew build
