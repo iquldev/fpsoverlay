@@ -91,59 +91,42 @@ jobs:
     needs: [build-1-20, build-1-21]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 🔖 Fetch
+        run: |
+          git fetch --prune --unshallow || true
+          git fetch --tags
 
-      - name: 🔖 Fetch all tags
-        run: git fetch --prune --unshallow --tags
+      - name: 🔍 Previous tag
+        id: prev_tag
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --skip=1 --max-count=1) || echo "")
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
 
-      - name: 📝 Generate Changelog
-        id: gen_notes
-        uses: actions/github-script@v6
+      - name: 📝 Generate changelog from commits
+        id: changelog
+        run: |
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          if [ -z "${{ steps.prev_tag.outputs.prev_tag }}" ]; then
+            echo "* First release! 🎉" >> $GITHUB_OUTPUT
+          else
+            git log ${{ steps.prev_tag.outputs.prev_tag }}..HEAD --pretty=format:"* %s (%an)" >> $GITHUB_OUTPUT
+          fi
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          github-token: ${{ secrets.RELEASE_TOKEN }}
-          script: |
-            const tag = context.ref.replace('refs/tags/','');
-            const { data } = await github.rest.repos.generateReleaseNotes({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: tag
-            });
-            return data.body;
-
-      - name: 📦 Create GitHub Release
-        id: create_release
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.RELEASE_TOKEN }}
-          script: |
-            const tag = context.ref.replace('refs/tags/','');
-            const notes = `# Changelog for ${tag}\n\n${`${{ steps.gen_notes.outputs.result }}`}`;
-            const release = await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: tag,
-              name: `Release ${tag}`,
-              body: notes,
-              draft: false,
-              prerelease: false
-            });
-            return release.data.upload_url;
-
-      - name: 📤 Upload 1.20.6 JAR
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.result }}
-          asset_path: 1.20.6/build/libs/*.jar
-          asset_name: fpsoverlay-${{ github.ref_name }}-1.20.6.jar
-          asset_content_type: application/java-archive
-
-      - name: 📤 Upload 1.21 JAR
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.result }}
-          asset_path: 1.21/build/libs/*.jar
-          asset_name: fpsoverlay-${{ github.ref_name }}-1.21.jar
-          asset_content_type: application/java-archive
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: |
+            1.20.6/build/libs/*.jar
+            1.21/build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   modrinth:
     name: 🎯 Publish to Modrinth
@@ -159,7 +142,14 @@ jobs:
           project_id: ${{ secrets.MODRINTH_PROJECT_ID }}
           version_number: ${{ github.ref_name }}-1.20.6
           loaders: fabric
-          game_versions: 1.20.6
+          game_versions: 
+            1.20
+            1.20.1
+            1.20.2
+            1.20.3
+            1.20.4
+            1.20.5
+            1.20.6
           release_type: release
           file: 1.20.6/build/libs/*.jar
 
@@ -170,7 +160,13 @@ jobs:
           project_id: ${{ secrets.MODRINTH_PROJECT_ID }}
           version_number: ${{ github.ref_name }}-1.21
           loaders: fabric
-          game_versions: 1.21
+          game_versions: 
+            1.21
+            1.21.1
+            1.21.2
+            1.21.3
+            1.21.4
+            1.21.5
           release_type: release
           file: 1.21/build/libs/*.jar
 
@@ -190,7 +186,7 @@ jobs:
           release-type: release
           changelog: "Automated release ${{ github.ref_name }} for MC 1.20.6"
           display-name: "${{ github.ref_name }}-1.20.6"
-          game-versions: '1.20.6'
+          game-versions: 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.5, 1.20.6
           loaders: 'fabric'
 
       - name: Publish 1.21 to CurseForge
@@ -202,5 +198,5 @@ jobs:
           release-type: release
           changelog: "Automated release ${{ github.ref_name }} for MC 1.21"
           display-name: "${{ github.ref_name }}-1.21"
-          game-versions: '1.21'
+          game-versions: 1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5
           loaders: 'fabric'
