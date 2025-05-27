@@ -4,6 +4,8 @@ on:
   push:
     branches: 
     - main
+    tags:
+    - 'v*.*.*'
 
 jobs:
   build-1-20:
@@ -23,7 +25,7 @@ jobs:
         distribution: temurin
         java-version: 21
         
-    - name: 📦 Cashing Gradle
+    - name: 📦 Caсhing Gradle
       uses: actions/cache@v3
       with:
         path: |
@@ -62,7 +64,7 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: 📦 Cashing Gradle
+      - name: 📦 Caсhing Gradle
         uses: actions/cache@v3
         with:
           path: |
@@ -83,3 +85,100 @@ jobs:
         with:
           name: mod-1.21
           path: 1.21/build/libs/*.jar
+          
+  release:
+    name: 🚀 Create GitHub Release with Changelog
+    needs:
+      - build-1-20
+      - build-1-21
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 📦 Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload 1.20.6 JAR
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: 1.20.6/build/libs/*.jar
+          asset_name: fpsoverlay-${{ github.ref_name }}-1.20.6.jar
+          asset_content_type: application/java-archive
+
+      - name: 📤 Upload 1.21 JAR
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: 1.21/build/libs/*.jar
+          asset_name: fpsoverlay-${{ github.ref_name }}-1.21.jar
+          asset_content_type: application/java-archive
+
+  modrinth:
+    name: 🎯 Publish to Modrinth
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Publish 1.20.6 to Modrinth
+        uses: Modrinth/modrinth-publish-action@v1
+        with:
+          api_token: ${{ secrets.MODRINTH_TOKEN }}
+          project_id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          version_number: ${{ github.ref_name }}-1.20.6
+          loaders: fabric
+          game_versions: 1.20.6
+          release_type: release
+          file: 1.20.6/build/libs/*.jar
+
+      - name: Publish 1.21 to Modrinth
+        uses: Modrinth/modrinth-publish-action@v1
+        with:
+          api_token: ${{ secrets.MODRINTH_TOKEN }}
+          project_id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          version_number: ${{ github.ref_name }}-1.21
+          loaders: fabric
+          game_versions: 1.21
+          release_type: release
+          file: 1.21/build/libs/*.jar
+
+  curseforge:
+    name: 📜 Publish to CurseForge
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Publish 1.20.6 to CurseForge
+        uses: curseforge/curseforge-upload@v1
+        with:
+          api-key: ${{ secrets.CF_API_KEY }}
+          project-id: ${{ secrets.CF_PROJECT_ID }}
+          file: 1.20.6/build/libs/*.jar
+          release-type: release
+          changelog: "Automated release ${{ github.ref_name }} for MC 1.20.6"
+          display-name: "${{ github.ref_name }}-1.20.6"
+          game-versions: '1.20.6'
+          loaders: 'fabric'
+
+      - name: Publish 1.21 to CurseForge
+        uses: curseforge/curseforge-upload@v1
+        with:
+          api-key: ${{ secrets.CF_API_KEY }}
+          project-id: ${{ secrets.CF_PROJECT_ID }}
+          file: 1.21/build/libs/*.jar
+          release-type: release
+          changelog: "Automated release ${{ github.ref_name }} for MC 1.21"
+          display-name: "${{ github.ref_name }}-1.21"
+          game-versions: '1.21'
+          loaders: 'fabric'
