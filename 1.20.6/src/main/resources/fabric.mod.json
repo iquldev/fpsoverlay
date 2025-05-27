@@ -1,38 +1,31 @@
 {
-	"schemaVersion": 1,
-	"id": "fpsoverlay",
-	"version": "1.8",
-	"name": "Info Overlay (aka FPS Overlay)",
-	"description": "\uD83D\uDDA5\uFE0F Shows your FPS (and not only) on the screen",
-	"authors": [
-		"iquldev"
-	],
-	"contact": {
-		"homepage": "https://modrinth.com/mod/fps-overlay",
-		"sources": "https://github.com/iquldev/fpsoverlay",
-		"issues": "https://github.com/iquldev/fpsoverlay/issues"
-	},
-	"license": "MIT",
-	"icon": "assets/fpsoverlay/icon.png",
-	"environment": "client",
-	"entrypoints": {
-		"main": [
-			"iquldev.fpsoverlay.FPSOverlay"
-		],
-		"client": [
-			"iquldev.fpsoverlay.FPSOverlayClient"
-		],
-		"modmenu": [
-			"iquldev.fpsoverlay.FPSOverlayModMenu"
-		]
-	},
-	"depends": {
-		"fabricloader": ">=0.15.11",
-		"minecraft": "~1.20",
-		"java": ">=21",
-		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+  "schemaVersion": 1,
+  "id": "fpsoverlay",
+  "version": "1.8.1",
+  "name": "Info Overlay (aka FPS Overlay)",
+  "description": "\uD83D\uDDA5\uFE0F Shows your FPS (and not only) on the screen",
+  "authors": ["iquldev"],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/fps-overlay",
+    "sources": "https://github.com/iquldev/fpsoverlay",
+    "issues": "https://github.com/iquldev/fpsoverlay/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/fpsoverlay/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": ["iquldev.fpsoverlay.FPSOverlay"],
+    "client": ["iquldev.fpsoverlay.FPSOverlayClient"],
+    "modmenu": ["iquldev.fpsoverlay.FPSOverlayModMenu"]
+  },
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "minecraft": "~1.20",
+    "java": ">=21",
+    "fabric-api": "*",
+    "midnightlib": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
 }
