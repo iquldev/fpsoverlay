@@ -1,37 +1,87 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
+name: Build and Publish
 
-name: build
-on: [pull_request, push]
+on: 
+  push:
+    branches: 
+    - main
+    tags:
+    - 'v*.*.*'
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        # Use these Java versions
-        java: [
-          21,    # Current Java LTS
-        ]
-    runs-on: ubuntu-22.04
+  build-1-20:
+    name: 🧱 Build 1.20.6
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: '1.20.6'
+
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-      - name: validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
-      - name: setup jdk ${{ matrix.java }}
+    - name: 📥 Checkout
+      uses: actions/checkout@v3
+      
+    - name: ☕ Installing Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 21
+        
+    - name: 📦 Caсhing Gradle
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-1.20.6-${{ hashFiles('1.20.6/**/*.gradle*', '1.20.6/**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-1.20.6
+
+    - name: 🔓 Allow gradlew
+      run: chmod +x gradlew
+          
+    - name: 🛠️ Build
+      run: ./gradlew build
+
+    - name: 📤 JAR 1.20
+      uses: actions/upload-artifact@v4
+      with:
+        name: mod-1.20.6
+        path: 1.20.6/build/libs/*.jar
+
+  build-1-21:
+    name: 🧱 Build 1.21 Mod
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: '1.21'
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v3
+
+      - name: ☕ Installing Java
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
-          distribution: 'microsoft'
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: build
+          distribution: temurin
+          java-version: 21
+
+      - name: 📦 Caсhing Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-1.21-${{ hashFiles('1.21/**/*.gradle*', '1.21/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-1.21
+
+      - name: 🔓 Allow gradlew
+        run: chmod +x gradlew
+
+      - name: 🛠️ Build
         run: ./gradlew build
-      - name: capture build artifacts
-        if: ${{ matrix.java == '21' }} # Only upload artifacts built from latest java
+
+      - name: 📤 JAR 1.21
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
-          path: build/libs/
+          name: mod-1.21
+          path: 1.21/build/libs/*.jar
