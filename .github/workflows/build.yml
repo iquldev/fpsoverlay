@@ -86,7 +86,7 @@ jobs:
           name: mod-1.21
           path: 1.21/build/libs/*.jar
           
-  build-1-21:
+  build-1-21-6:
     name: 🧱 Build 1.21.6
     runs-on: ubuntu-latest
     defaults:
