@@ -23,7 +23,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 17
+        java-version: 21
         
     - name: 📦 Caсhing Gradle
       uses: actions/cache@v3
@@ -62,7 +62,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: 📦 Caсhing Gradle
         uses: actions/cache@v3
@@ -101,7 +101,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: 📦 Caсhing Gradle
         uses: actions/cache@v3
