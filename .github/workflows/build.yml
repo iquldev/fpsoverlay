@@ -85,3 +85,42 @@ jobs:
         with:
           name: mod-1.21
           path: 1.21/build/libs/*.jar
+          
+  build-1-21-6:
+    name: 🧱 Build 1.21.6
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: '1.21.6'
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v3
+
+      - name: ☕ Installing Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: 📦 Caсhing Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-1.21.6-${{ hashFiles('1.21.6/**/*.gradle*', '1.21.6/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-1.21.6
+
+      - name: 🔓 Allow gradlew
+        run: chmod +x gradlew
+
+      - name: 🛠️ Build
+        run: ./gradlew build
+
+      - name: 📤 JAR 1.21.6
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-1.21.6
+          path: 1.21.6/build/libs/*.jar
