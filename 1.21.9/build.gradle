@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.11-SNAPSHOT'
+	id 'fabric-loom' version '1.13-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -24,6 +24,10 @@ repositories {
 
 	maven {
 		url = "https://api.modrinth.com/maven"
+	}
+
+	maven {
+		url = "https://maven.midnightdust.eu/releases"
 	}
 }
 
@@ -50,7 +54,7 @@ dependencies {
 
 	modImplementation("com.terraformersmc:modmenu:16.0.0-rc.1")
 
-	modImplementation("maven.modrinth:midnightlib:1.8.1+1.21.9-fabric")
+	modImplementation("maven.modrinth:midnightlib:1.9.1+1.21.10-fabric")
 }
 
 processResources {
